@@ -1,0 +1,28 @@
+
+var Number R
+var Number R2
+var Number R3
+var Number G
+var Number G2
+var Number B
+
+
+    R=1 //czerwony
+    G=94 //w górnej skali RGB
+    B=9 //jasność minimalna
+    R2=R //kolejne ledy
+    R3=R
+    G2=G
+
+    
+    while(R<56 && R2 < 56 && R3 < 56) {
+        R=R+1
+        B=B+1 //jasnosc 
+        R2=R+29 //kolejne ledy maja inne kolory
+        R3=R+10
+        sendCommand(RGBLight1,R+","+G+","+B)
+        sendCommand(RGBLight2,R3+","+G2+","+B)
+        sendCommand(RGBLight3,R+","+G+","+B)
+        sendCommand(RGBLight4,R2+","+G2+","+B)        
+        Thread::sleep(30000)
+    }

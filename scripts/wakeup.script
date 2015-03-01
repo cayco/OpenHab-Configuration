@@ -1,0 +1,8 @@
+var Number wakeUpDimmer
+
+    wakeUpDimmer=8
+    while(wakeUpDimmer<100){
+        wakeUpDimmer=wakeUpDimmer+1
+        sendCommand(Light_LivingroomB,wakeUpDimmer)
+        Thread::sleep(20000)
+    }

@@ -1,0 +1,102 @@
+
+Group GF_Corridor 	"Korytarz" 		<corridor> 	(gGF)
+Group GF_Bath 		"Łazienka" 		<bath> 		(gGF)
+Group GF_Living 		"Salon" 		<room> 		(gGF)
+Group GF_Toilet		"Toaleta" 		<bath> 		(gGF)
+Group GF_Child 		"Pokój dzieci" 	<boy1> 		(gGF)
+Group GF_Bed 		"Sypialnia" 	<bedroom> 	(gGF)
+Group Loc	 		"Lokalizacja" 	<garden> 		(Loc)
+Group GF_Kitchen	 	"Kuchnia" 	<kitchen> 		(gGF)
+
+Group GF_Balcony	 	"Balkon" 	<garden> 		(gGF)
+/* active groups */
+Group:Switch:OR(ON, OFF) 		Lights 		"Wszystkie światła [(%d)]" 	<lights> 		(All)
+Group:Switch:OR(ON, OFF) 		Outlets 		"Wszystkie kontakty [(%d)]" 	<lights> 		(All)
+Group:Number:AVG 				Temperature	"Średnia temperatura [%.1f °C]" 	<temperature>	(Status)
+Group:Contact:OR(OPEN, CLOSED) 	Windows 	"Otwarte okna [(%d)]"				<contact>		(All)
+
+Switch Light_GF_Living_TableSL 			"Salon żyrandol" 		<slider> (GF_Living, Lights) {tellstick="salon:Command:Dimmable:1" }
+Switch Light_GF_Bedroom_CeilingSL 		"Sypialnia żyrandol" 	<slider> (GF_Bed, Lights) {tellstick="sypialnia:Command:Dimmable:1" }
+Switch Light_GF_Children_CeilingSL		"Dzieci żyrandol" 		<slider> (GF_Child, Lights) {tellstick="dzieci:Command:Dimmable:1" }
+//Switch Light_GF_Corridor_Ceiling		"Korytarz" 				<slider> (GF_Corridor, Lights)
+//Switch Light_GF_Kitchen_Ceiling 		"Kuchnia żyrandol" 		<slider> (GF_Kitchen, GF_Living, Lights)
+Switch Light_GF_Living_Table 			"Żyrandol - ściemmniacz" 		<slider> (GF_Living, GF_Kitchen) {exec=">[ON:tdtool -n salon]", autoupdate="false"}
+Switch Light_GF_Bedroom_Ceiling 		"Żyrandol - ściemmniacz" 	<slider> (GF_Bed) {exec=">[ON:tdtool -n sypialnia]", autoupdate="false"}
+Switch Light_GF_Children_Ceiling		"Żyrandol - ściemmniacz" 		<slider>  (GF_Child) {exec=">[ON:tdtool -n dzieci]", autoupdate="false"}
+Switch Light_GF_ToiletS					"Światło w toalecie"	<slider>	(GF_Toilet)
+
+Switch Light_Groundfloor                "Milight - wszystkie"    (GF_Living, Lights) {milight="salon;6"}    
+Switch Light_GroundfloorN          		"Tryb nocny" 			(GF_Living) {milight="salon;6;nightMode"} 
+Dimmer Light_LivingroomB    			"Jasność" 				 (GF_Living)  {milight="salon;6;brightness"} 
+Switch Light_LivingroomC   				"Białe" 	 (GF_Living, Lights)  {milight="salon;6;whiteMode"}
+Color  RGBLight							"Salon kolor"			<slider> (GF_Living) {milight="salon;6;rgb"}
+Color  RGBLight1							{milight="salon;7;rgb"}
+Color  RGBLight2							{milight="salon;8;rgb"}
+Color  RGBLight3							{milight="salon;9;rgb"}
+Color  RGBLight4							{milight="salon;10;rgb"}
+
+Switch	WakeUp 							"Budzik"					(GF_Living)
+Switch	TestSwitch 							"Test Switch"					
+
+Number Scene_General			"Ustawienie"			<sofa>
+
+//Wyłączniki prądu
+Switch Vol_GF_Living_Sound			"HiFi" 						<light> (GF_Living, Outlets) {tellstick="HiFi:Command"}	
+Switch Vol_GF_Toilet_Heating 		"Kaloryfer w łazience" 		<heating> (GF_Toilet, Outlets) {tellstick="Kaloryfer:Command"}
+Switch Vol_GF_Living_Other 			"Elektronika w salonie" 	<light> (Outlets) {tellstick="Komputer:Command"}
+
+// Location and movement
+Switch  PresenceMagda_PhoneMqttHome   	"Magda @ Home"    				<present> (Loc,GF_Corridor)	{mqttitude="mqttpi:owntracks/magda/#" }  								
+Switch  PresenceCayco_PhoneMqttHome   	"Cayco @ Home"					<present> (Loc, GF_Corridor) 	{mqttitude="mqttpi:owntracks/cayco/#" } 								
+Switch	MoveDetect						"Wykrywanie ruchu w korytarzu" 	<siren> (Loc, GF_Corridor) 	{exec="OFF:/usr/bin/curl -s http://127.0.0.1:8082/0/detection/stop"} 	
+Switch RuchKorytarz
+//Switch	MoveDetectDoor						"Wykrywanie ruchu w korytarzu przy drzwiach" 	<siren> (Loc, GF_Corridor) 	{mqtt="<[mqttpi:MyMQTT/23/1/V_TRIPPED:state:default]"} 	
+
+Switch FanSwitch   	"Wentylator"    				<present> (Loc,GF_Toilet) {mqtt=">[mqttpi:MyMQTT/26/1/V_LIGHT:command:ON:1],>[mqttpi:MyMQTT/26/1/V_LIGHT:command:OFF:0]"}
+
+//Okna i drzwi
+Contact Window_GF_Frontdoor     "Drzwi frontowe [MAP(en.map):%s]"            (GF_Corridor, Windows) 
+Contact Window_GF_Kitchen               "Kuchnia [MAP(en.map):%s]"                      (GF_Kitchen, Windows)
+Contact Window_GF_Living                "Balkon[MAP(en.map):%s]"         (GF_Living, Windows)
+Contact Window_GF_Bed                   "Sypialnia [MAP(en.map):%s]"                      (GF_Bed, Windows)
+Contact Window_GF_Children "U dzieci [MAP(en.map):%s]"        (GF_Child, Windows)
+
+//inne czujniki
+//Contact Water_GF_Toilet     "Wyciek wody [MAP(en.map):%s]"            (GF_Toilet, Windows)
+//Contact Temp_GF_Kitchen               "Temp. w lodówce [MAP(en.map):%s]"      (GF_Kitchen, Windows)
+//Contact Air_GF_Living                "Jakość powietrza [MAP(en.map):%s]"         (GF_Living, Windows)
+Contact Smoke_GF_Living                "Dym [MAP(en.map):%s]"         (GF_Living, Windows)
+Contact Noise_GF_Living                "Hałas [MAP(en.map):%s]"         (GF_Living, Windows)
+Contact Noise_GF_Bath				   "Hałas w lazience"         (GF_Bath, Windows) {mqtt="<[mqttpi:MyMQTT/23/2/V_LIGHT_LEVEL:state:default]"}
+
+/* Indoor Temperatures */
+Group Temp_Chart	(Temperature)
+Number Temperature_GF_Corridor 	"Temperatura [%.1f °C]"	<temperature>	(Temperature, GF_Corridor)
+Number Temperature_GF_Toilet 	"Toaleta [%.1f °C]"	<temperature>	(Temperature, GF_Toilet,Temp_Chart){mqtt="<[mqttpi:MyMQTT/26/11/V_TEMP:state:default]"}
+Number Temperature_GF_Living 	"Temperatura [%.1f °C]"	<temperature>	(Temperature, GF_Living)
+Number Temperature_GF_Kitchen 	"Kuchnia [%.1f °C]"	<temperature>	(Temperature, GF_Kitchen, Temp_Chart) {mqtt="<[mqttpi:MyMQTT/20/0/V_TEMP:state:default]"}
+Number Temperature_GF_Bath 		"Temperatura w łazience [%.1f °C]"	<temperature>	(Temperature, GF_Bath)
+Number Temperature_GF_Child 	"Temperatura [%.1f °C]"	<temperature>	(Temperature, GF_Child)
+Number Temperature_GF_Bed 		"Temperatura [%.1f °C]"	<temperature>	(Temperature, GF_Bed)
+Number Temperature_GF_Balcony 	"Balkon [%.1f °C]"	<temperature>	(Temperature, GF_Balcony, Temp_Chart) {mqtt="<[mqttpi:MyMQTT/27/4/V_TEMP:state:default]"}
+
+//Humidities
+Group Humidity	(All)
+Number Humidity_GF_Toilet 		"Wilgotność w toalecie [%.1f]"	<temperature>	(Humidity, GF_Toilet) {mqtt="<[mqttpi:MyMQTT/26/10/V_HUM:state:default]"}
+Number Humidity_GF_Balcony 		"Wilgotność na balkonie [%.1f]"	<temperature>	(Humidity, GF_Balcony) {mqtt="<[mqttpi:MyMQTT/27/3/V_HUM:state:default]"}
+//Voltages
+//Number Voltage_GF_Toilet 		"Stan baterii [%d mV]	"	<temperature>	(Voltage, GF_Toilet){mqtt="<[mqttpi:MyMQTT/26/12/V_VOLTAGE:state:default]"}
+Number Voltage_GF_Kitchen 		"Stan baterii [%d mV]	"	<temperature>	(Voltage, GF_Kitchen){mqtt="<[mqttpi:MyMQTT/20/1/V_VOLTAGE:state:default]"}
+
+//Voltages
+Number Light_GF_Toilet 		"Światło [%d lx ]"	<temperature>	(Light, GF_Toilet){mqtt="<[mqttpi:MyMQTT/26/13/V_LIGHT_LEVEL:state:default]"}
+Number Light_GF_Bath		"Światło w korytarzu [%d lx ]"	<temperature>	(Light, GF_Bath) {mqtt="<[mqttpi:MyMQTT/23/0/V_LIGHT_LEVEL:state:default]"}
+Number Light_GF_Balcony		"Światło na balkonie [%d lx ]"	<temperature>	(Light, GF_Balcony) {mqtt="<[mqttpi:MyMQTT/27/2/V_LIGHT_LEVEL:state:default]"}
+Number Rain		"Deszcz [%d ]"	<temperature>	(GF_Balcony) {mqtt="<[mqttpi:MyMQTT/27/5/V_RAIN:state:default]"}
+
+Number Pressure		"Ciśnienie [%.1f Pa ]"	<temperature>	(GF_Balcony) {mqtt="<[mqttpi:MyMQTT/27/0/V_PRESSURE:state:default]"}
+
+Number Temp_Chart_Period		"Temperatura"
+Number Hum_Chart_Period		"Wilgotność"
+Number Rain_Chart_Period		"Deszcz"
+Number Pressure_Period		"Ciśnienie"

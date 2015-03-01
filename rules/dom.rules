@@ -1,0 +1,433 @@
+import org.openhab.core.library.types.*
+import org.openhab.core.persistence.*
+import org.openhab.model.script.actions.*
+import org.openhab.action.pushover.*
+import org.openhab.core.library.types.DecimalType
+import java.lang.Math
+
+var Timer timer
+var Integer inTimer = 0
+var Integer tmp=0
+var Double tmpf
+var double humb=0
+var Integer newRain = 0
+
+/* 
+rule CaycoPresenceOn
+when 
+	Item PresenceCayco_PhoneMqttHome changed from OFF to ON
+then
+	pushover("Cayco jest w domu","iPhone4S")
+end
+
+rule CaycoPresenceOff
+when 
+	Item PresenceCayco_PhoneMqttHome changed from ON to OFF
+then
+	pushover("Cayco wyszedł z domu","iPhone4S")
+end
+*/
+
+rule FanControlH //wlacz lub wylacz wentylator gdy wilgotnosc jest wieksza niz 45%
+when
+	Item Humidity_GF_Toilet changed
+then
+	if ((FanSwitch.state == OFF || FanSwitch.state == Uninitialized || FanSwitch.state == Undefined) && Humidity_GF_Toilet.state > 60) {
+		sendCommand(FanSwitch, ON)
+	} else if (FanSwitch.state == ON && Humidity_GF_Toilet.state < 60 && Light_GF_Toilet.state < 20 && inTimer == 0) {
+		sendCommand(FanSwitch, OFF)
+	}	
+end
+/*
+rule FanControlL //wlacz wentylator gdy ktos jest dluzej niz 2min
+when
+	Item Light_GF_ToiletS changed from OFF to ON
+then
+	if (FanSwitch.state == OFF) {
+//		timer = createTimer(now.plusSeconds(120)) [|
+                sendCommand(FanSwitch, ON)
+//            ]
+	}
+end
+
+rule FanControlLOF //wylacz wentylator gdy nikogo nie ma przez 4min
+when
+	Item Light_GF_ToiletS changed from ON to OFF
+then
+	if (FanSwitch.state == ON) {
+//		timer = createTimer(now.plusSeconds(120)) [|
+                sendCommand(FanSwitch, OFF)
+//            ]
+	}
+end	
+*/	
+
+rule TempBChange
+when
+	Item Temperature_GF_Balcony changed or
+	Item Temperature_GF_Kitchen changed or
+	Item Humidity_GF_Balcony changed or
+	Item Pressure changed
+then
+	var tmpb = ((Temperature_GF_Balcony.state as DecimalType) * 180/100)+32
+	var tmpk = ((Temperature_GF_Kitchen.state as DecimalType) * 180/100)+32
+	var tmph = Humidity_GF_Balcony.state as DecimalType
+	tmpf = ((Pressure.state as DecimalType).floatValue * 0.0295301)	
+	executeCommandLine("curl -s weatherstation.wunderground.com/weatherstation/updateweatherstation.php?ID=IMAZOWIE80&PASSWORD=Verr9eLb8Y&dateutc=now&action=updateraw&tempf="+tmpb+"&baromin="+tmpf+"&indoortempf="+tmpk+"&humidity="+tmph)
+end
+
+/*
+rule TempKChange
+when
+	Item Temperature_GF_Kitchen changed
+then
+	var tmpk = ((Temperature_GF_Kitchen.state as DecimalType) * 180/100)+32
+	executeCommandLine("curl -s weatherstation.wunderground.com/weatherstation/updateweatherstation.php?ID=IMAZOWIE80&PASSWORD=Verr9eLb8Y&dateutc=now&action=updateraw&indoortempf="+tmpk)
+end
+
+//rule TempTChange
+//when
+//	Item Temperature_GF_Toilet changed
+//then
+//	executeCommandLine("curl -s www.dweet.io/dweet/for/6B5D6E27-E700-4394-AF60-06734E5A8982?temperaturet="+Temperature_GF_Toilet.state)
+//end
+
+rule HumBChange
+when
+	Item Humidity_GF_Toilet changed
+then
+	var tmpNew = (Humidity_GF_Toilet.state as DecimalType).doubleValue()
+	if (tmpNew != humb) {
+	var A0 = Humidity_GF_Toilet.state as DecimalType
+	var humidit = Humidity_GF_Balcony.state as DecimalType
+	var SUM = -7.90298 * (A0.doubleValue()-1)
+	SUM = SUM+5.02808 * Math::log10(A0.doubleValue())
+	SUM = SUM-1.3816e-7 * (Math::pow(10,(11.344*(1-1/A0)).doubleValue())-1)
+	SUM = SUM+8.1328e-3 * (Math::pow(10,(-3.49149*(A0-1)).doubleValue())-1)
+	SUM = SUM+Math::log10(1013.246).doubleValue()
+	var VP = Math::pow(10, (SUM-3).doubleValue()) * humidit.doubleValue() 
+	var T = (Math::log((VP.doubleValue()/0.61078).doubleValue())).doubleValue()
+	//var dewpoint = (241.88).doubleValue() * T.doubleValue() // (17.558-T.doubleValue())).doubleValue()
+	//var dewpointf = (dewpoint.doubleValue()* 180/100).doubleValue()+32
+//	executeCommandLine("curl -s weatherstation.wunderground.com/weatherstation/updateweatherstation.php?ID=IMAZOWIE80&PASSWORD=Verr9eLb8Y&dateutc=now&action=updateraw&indoorhumidity="+tmpNew)
+	humb = tmpNew.doubleValue()
+	}
+	
+	
+end
+
+rule HumTChange
+when
+	Item Humidity_GF_Balcony changed
+then
+	var tmph = Humidity_GF_Balcony.state as DecimalType
+	/*
+ * {
+    double A0= 373.15/(273.15 + celsius);
+    double SUM = -7.90298 * (A0-1);
+    SUM += 5.02808 * log10(A0);
+    SUM += -1.3816e-7 * (pow(10, (11.344*(1-1/A0)))-1) ;
+    SUM += 8.1328e-3 * (pow(10,(-3.49149*(A0-1)))-1) ;
+    SUM += log10(1013.246);
+    double VP = pow(10, SUM-3) * humidity;
+    double T = log(VP/0.61078);   // temp var
+    return (241.88 * T) / (17.558-T);
+	}
+ * 
+ * 
+ *
+	var A0 = Temperature_GF_Balcony.state as DecimalType
+	var humidit = Humidity_GF_Balcony.state as DecimalType
+	var SUM = -7.90298 * (A0-1)
+	//SUM = SUM+5.02808 * Math::log10(A0.doubleValue())
+	//SUM = SUM-1.3816e-7 * (Math::pow(10,(11.344*(1-1/A0)).doubleValue())-1)
+	//SUM = SUM+8.1328e-3 * (Math::pow(10,(-3.49149*(A0-1)).doubleValue())-1)
+	//SUM = SUM+Math::log10(1013.246)
+	var VP = Math::pow(10, (SUM-3).doubleValue()) * humidit 
+	var T = Math::log((VP/0.61078).doubleValue())
+	var dewpoint = (241.88 * T) / (17.558-T)
+	var dewpointf = (dewpoint* 180/100)+32
+	
+	executeCommandLine("curl -s weatherstation.wunderground.com/weatherstation/updateweatherstation.php?ID=IMAZOWIE80&PASSWORD=Verr9eLb8Y&dateutc=now&action=updateraw&dewptf="+dewpointf)
+	* 
+	*
+	executeCommandLine("curl -s weatherstation.wunderground.com/weatherstation/updateweatherstation.php?ID=IMAZOWIE80&PASSWORD=Verr9eLb8Y&dateutc=now&action=updateraw&humidity="+tmph)
+end
+
+rule PressChange
+when
+	Item Pressure changed
+then
+	tmpf = ((Pressure.state as DecimalType).floatValue * 0.0295301)
+	executeCommandLine("curl -s weatherstation.wunderground.com/weatherstation/updateweatherstation.php?ID=IMAZOWIE80&PASSWORD=Verr9eLb8Y&dateutc=now&action=updateraw&baromin="+tmpf)
+end
+
+//rule RainChange
+//when
+//	Item Rain changed
+//then
+//	executeCommandLine("curl -s www.dweet.io/dweet/for/6B5D6E27-E700-4394-AF60-06734E5A8982?rain="+Rain.state)
+//end
+*/
+rule Light_GF_BalconyChange
+when
+	Item Light_GF_Balcony changed
+then
+	executeCommandLine("curl -s www.dweet.io/dweet/for/6B5D6E27-E700-4394-AF60-06734E5A8982?lightb="+Light_GF_Balcony.state)
+end
+
+/*
+rule VoltTChange
+when
+	Item Voltage_GF_Toilet changed
+then
+	executeCommandLine("curl -s www.dweet.io/dweet/for/6B5D6E27-E700-4394-AF60-06734E5A8982?voltaget="+Voltage_GF_Toilet.state)
+end
+*/ 
+
+rule VoltKChange
+when
+	Item Voltage_GF_Kitchen changed
+then
+	executeCommandLine("curl -s www.dweet.io/dweet/for/6B5D6E27-E700-4394-AF60-06734E5A8982?voltagek="+Voltage_GF_Kitchen.state)
+end
+
+rule LightTChanged
+when
+	Item Light_GF_Toilet changed
+then
+	if (Light_GF_Toilet.state > 20 && (Light_GF_ToiletS.state == OFF || Light_GF_ToiletS.state == Uninitialized || Light_GF_ToiletS.state == Undefined))
+	{
+		sendCommand(Light_GF_ToiletS, ON)
+		inTimer = 1
+		timer = createTimer(now.plusSeconds(15)) [|
+			if (Light_GF_Toilet.state > 20) {
+				sendCommand(FanSwitch,ON)
+			}
+		inTimer = 0
+		]
+	} else if (Light_GF_Toilet.state < 20 && Light_GF_ToiletS.state == ON)
+	{
+		//postUpdate(Light_GF_ToiletS, OFF)
+		//postUpdate(FanSwitch, OFF)
+		inTimer = 1
+		timer = createTimer(now.plusSeconds(60)) [|
+			if (Light_GF_Toilet.state < 20 && Humidity_GF_Toilet.state < 60) {
+				sendCommand(Light_GF_ToiletS, OFF)
+				sendCommand(FanSwitch,OFF)
+			}
+			inTimer = 0
+		]
+	}
+end
+/* 
+rule LightTChangeON
+when
+	Item Light_GF_ToiletS changed to ON
+then
+	executeCommandLine("curl -s www.dweet.io/dweet/for/6B5D6E27-E700-4394-AF60-06734E5A8982?lightt=ON")
+end
+
+
+
+rule LightTChangeOFF
+when
+	Item Light_GF_ToiletS changed to OFF
+then
+	executeCommandLine("curl -s www.dweet.io/dweet/for/6B5D6E27-E700-4394-AF60-06734E5A8982?lightt=OFF")
+end
+*/
+rule SceneKomp
+when
+	Item Scene_General received command 1 //Komputer
+then
+	sendCommand(RGBLight, "32,67,100")
+	executeCommandLine("tdtool -n HiFi")
+	executeCommandLine("tdtool -n Komputer")
+	sendCommand(Light_GF_Living_TableSL,"O")
+end	
+
+rule SceneLozko
+when
+	Item Scene_General received command 2 //Łóżko
+then
+	sendCommand(RGBLight, "30,92,100")
+	executeCommandLine("tdtool -f salon")
+end	
+
+
+rule SceneNoc
+when
+	Item Scene_General received command 3 //Noc
+then
+	sendCommand(Lights, "OFF")
+	sendCommand(RGBLight1, "1,94,8")
+	sendCommand(RGBLight3, "1,94,8")
+end	
+
+rule SceneOff
+when
+	Item Scene_General received command 5 //Off
+then
+	sendCommand(Lights, "OFF")
+end	
+
+
+rule SceneFull
+when
+	Item Scene_General received command 4 //FullLights
+then
+	sendCommand(Light_GF_Living_TableSL,"ON")
+	sendCommand(Light_LivingroomC, "ON")
+end	
+
+ rule WakeUp
+ when
+    Time cron "0 00 6 ? * MON-FRI *"
+ then
+ 	if(WakeUp.state == ON) {
+ 		callScript("sunrise")
+ 	}
+ end
+ 	
+rule RGBWakeUp
+when
+	Item TestSwitch changed
+then
+	callScript("sunrise")
+end	
+
+rule AutomatykaGrzejnikaOn
+when
+/* 
+	Time cron "0 0 6 * * ?" or
+	Time cron "0 0 9 * * ?" or
+	Time cron "0 0 12 * * ?" or
+	Time cron "0 0 15 * * ?" or
+	Time cron "0 0 18 * * ?" or
+	Time cron "0 0 21 * * ?"
+	*/
+	Item Temperature_GF_Toilet changed
+then
+	var hour = now.getHourOfDay
+	var temperatura = Temperature_GF_Toilet.state as DecimalType
+	if ( temperatura < 21 ) {
+		sendCommand(Vol_GF_Toilet_Heating, ON)
+	} else if (temperatura > 22 ) {
+		sendCommand(Vol_GF_Toilet_Heating, OFF)
+	}
+	
+end  
+/* 
+rule AutomatykaGrzejnikaOff
+when
+	Time cron "0 0 7 * * ?" or
+	Time cron "0 0 10 * * ?" or
+	Time cron "0 0 13 * * ?" or
+	Time cron "0 0 16 * * ?" or
+	Time cron "0 0 19 * * ?" or
+	Time cron "0 0 22 * * ?"
+then
+	executeCommandLine("tdtool -f Kaloryfer")
+end
+*/
+rule MagdaPresenceOn
+when 
+	Item PresenceMagda_PhoneMqttHome changed from OFF to ON
+then
+	pushover("Magda jest w domu")
+end
+
+rule MagdaPresenceOff
+when 
+	Item PresenceMagda_PhoneMqttHome changed from ON to OFF
+then
+	pushover("Magda wyszła z domu")
+end
+
+
+rule Alarm
+when
+	Item RuchKorytarz changed from OFF to ON
+then
+	if (PresenceMagda_PhoneMqttHome.state == OFF && PresenceCayco_PhoneMqttHome.state == OFF)
+	{
+			pushover("Alarm! Obcy w domu")
+	}
+end
+
+rule DetectionOnOff
+when
+	Item PresenceCayco_PhoneMqttHome changed or
+	Item PresenceMagda_PhoneMqttHome changed
+then
+	if (PresenceMagda_PhoneMqttHome.state == ON || PresenceCayco_PhoneMqttHome.state == ON)
+	{
+		executeCommandLine("/usr/bin/curl -s http://127.0.0.1:8082/0/detection/pause")
+	} else if (PresenceMagda_PhoneMqttHome.state == OFF && PresenceCayco_PhoneMqttHome.state == OFF)
+	{
+		executeCommandLine("/usr/bin/curl -s http://127.0.0.1:8082/0/detection/start")
+	}
+end
+
+rule DeszczPada
+when 
+	Item Rain changed
+then
+	if ( Rain.state > 10 && newRain == 0)
+	{
+		pushover("Cayco wyszedł z domu")	
+		newRain = 1 //rain's started
+	}
+	if (Rain.state < 10 && newRain == 1)
+	{
+		newRain = 0 //rain has finished
+	}
+end	
+
+/*rule CaycoPozaDomem
+when
+	Item Miejsce_cayco changed from Dom
+then
+	pushover("Cayco wyszedł z domu")
+end
+
+
+rule MagdaPozaDomem
+when
+	Item Miejsce_magda changed from Dom
+then
+	pushover("Magda wyszła z domu")
+end
+*/
+/*
+when
+	Item Dom_cayco_phone received update or
+	Item Dom_magda_phone received update
+then
+	if (Miejsce_cayco.state == "Dom")
+	{
+		if (Dom_cayco_phone.state == "enter")
+		{
+			pushover("Cayco jest w domu")
+		}
+		if (Dom_cayco_phone.state == "leave")
+		{
+			pushover("Cayco wyszedł z domu")
+		}
+		
+	}
+	if (Miejsce_magda.state == "Dom")
+	{
+		if (Dom_magda_phone.state == "enter")
+		{
+			pushover("Magda jest w domu")
+		}
+		if (Dom_magda_phone.state == "leave")
+		{
+			pushover("Magda wyszła z domu")
+		}
+			
+	}
+*/
+
