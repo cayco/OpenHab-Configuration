@@ -11,6 +11,7 @@ var Integer tmp=0
 var Double tmpf
 var double humb=0
 var Integer newRain = 0
+var double lightons
 
 /* 
 rule CaycoPresenceOn
@@ -76,22 +77,7 @@ then
 	executeCommandLine("curl -s weatherstation.wunderground.com/weatherstation/updateweatherstation.php?ID=IMAZOWIE80&PASSWORD=Verr9eLb8Y&dateutc=now&action=updateraw&tempf="+tmpb+"&baromin="+tmpf+"&indoortempf="+tmpk+"&humidity="+tmph)
 end
 
-/*
-rule TempKChange
-when
-	Item Temperature_GF_Kitchen changed
-then
-	var tmpk = ((Temperature_GF_Kitchen.state as DecimalType) * 180/100)+32
-	executeCommandLine("curl -s weatherstation.wunderground.com/weatherstation/updateweatherstation.php?ID=IMAZOWIE80&PASSWORD=Verr9eLb8Y&dateutc=now&action=updateraw&indoortempf="+tmpk)
-end
-
-//rule TempTChange
-//when
-//	Item Temperature_GF_Toilet changed
-//then
-//	executeCommandLine("curl -s www.dweet.io/dweet/for/6B5D6E27-E700-4394-AF60-06734E5A8982?temperaturet="+Temperature_GF_Toilet.state)
-//end
-
+/* 
 rule HumBChange
 when
 	Item Humidity_GF_Toilet changed
@@ -116,58 +102,6 @@ then
 	
 end
 
-rule HumTChange
-when
-	Item Humidity_GF_Balcony changed
-then
-	var tmph = Humidity_GF_Balcony.state as DecimalType
-	/*
- * {
-    double A0= 373.15/(273.15 + celsius);
-    double SUM = -7.90298 * (A0-1);
-    SUM += 5.02808 * log10(A0);
-    SUM += -1.3816e-7 * (pow(10, (11.344*(1-1/A0)))-1) ;
-    SUM += 8.1328e-3 * (pow(10,(-3.49149*(A0-1)))-1) ;
-    SUM += log10(1013.246);
-    double VP = pow(10, SUM-3) * humidity;
-    double T = log(VP/0.61078);   // temp var
-    return (241.88 * T) / (17.558-T);
-	}
- * 
- * 
- *
-	var A0 = Temperature_GF_Balcony.state as DecimalType
-	var humidit = Humidity_GF_Balcony.state as DecimalType
-	var SUM = -7.90298 * (A0-1)
-	//SUM = SUM+5.02808 * Math::log10(A0.doubleValue())
-	//SUM = SUM-1.3816e-7 * (Math::pow(10,(11.344*(1-1/A0)).doubleValue())-1)
-	//SUM = SUM+8.1328e-3 * (Math::pow(10,(-3.49149*(A0-1)).doubleValue())-1)
-	//SUM = SUM+Math::log10(1013.246)
-	var VP = Math::pow(10, (SUM-3).doubleValue()) * humidit 
-	var T = Math::log((VP/0.61078).doubleValue())
-	var dewpoint = (241.88 * T) / (17.558-T)
-	var dewpointf = (dewpoint* 180/100)+32
-	
-	executeCommandLine("curl -s weatherstation.wunderground.com/weatherstation/updateweatherstation.php?ID=IMAZOWIE80&PASSWORD=Verr9eLb8Y&dateutc=now&action=updateraw&dewptf="+dewpointf)
-	* 
-	*
-	executeCommandLine("curl -s weatherstation.wunderground.com/weatherstation/updateweatherstation.php?ID=IMAZOWIE80&PASSWORD=Verr9eLb8Y&dateutc=now&action=updateraw&humidity="+tmph)
-end
-
-rule PressChange
-when
-	Item Pressure changed
-then
-	tmpf = ((Pressure.state as DecimalType).floatValue * 0.0295301)
-	executeCommandLine("curl -s weatherstation.wunderground.com/weatherstation/updateweatherstation.php?ID=IMAZOWIE80&PASSWORD=Verr9eLb8Y&dateutc=now&action=updateraw&baromin="+tmpf)
-end
-
-//rule RainChange
-//when
-//	Item Rain changed
-//then
-//	executeCommandLine("curl -s www.dweet.io/dweet/for/6B5D6E27-E700-4394-AF60-06734E5A8982?rain="+Rain.state)
-//end
 */
 rule Light_GF_BalconyChange
 when
@@ -176,14 +110,7 @@ then
 	executeCommandLine("curl -s www.dweet.io/dweet/for/6B5D6E27-E700-4394-AF60-06734E5A8982?lightb="+Light_GF_Balcony.state)
 end
 
-/*
-rule VoltTChange
-when
-	Item Voltage_GF_Toilet changed
-then
-	executeCommandLine("curl -s www.dweet.io/dweet/for/6B5D6E27-E700-4394-AF60-06734E5A8982?voltaget="+Voltage_GF_Toilet.state)
-end
-*/ 
+
 
 rule VoltKChange
 when
@@ -198,9 +125,10 @@ when
 then
 	if (Light_GF_Toilet.state > 20 && (Light_GF_ToiletS.state == OFF || Light_GF_ToiletS.state == Uninitialized || Light_GF_ToiletS.state == Undefined))
 	{
+		lightons = now().getMillis() / 1000
 		sendCommand(Light_GF_ToiletS, ON)
 		inTimer = 1
-		timer = createTimer(now.plusSeconds(15)) [|
+		timer = createTimer(now.plusSeconds(5)) [|
 			if (Light_GF_Toilet.state > 20) {
 				sendCommand(FanSwitch,ON)
 			}
@@ -208,26 +136,28 @@ then
 		]
 	} else if (Light_GF_Toilet.state < 20 && Light_GF_ToiletS.state == ON)
 	{
-		//postUpdate(Light_GF_ToiletS, OFF)
-		//postUpdate(FanSwitch, OFF)
-		inTimer = 1
-		timer = createTimer(now.plusSeconds(60)) [|
+/*		if (now().getMillis() / 1000 - lightons > 10)
+		{
+			logInfo("millis",(now().getMillis() / 1000) as String	)
+			logInfo("lightns",lightons as String)
+	 */		
+			inTimer = 1
+			timer = createTimer(now.plusSeconds(60)) [|
 			if (Light_GF_Toilet.state < 20 && Humidity_GF_Toilet.state < 60) {
 				sendCommand(Light_GF_ToiletS, OFF)
 				sendCommand(FanSwitch,OFF)
-			}
+			} 
 			inTimer = 0
-		]
-	}
+			]
+/* 		} else
+		{
+				sendCommand(Light_GF_ToiletS, OFF)
+				sendCommand(FanSwitch,OFF)
+		}
+		* 
+		*/
+	} 
 end
-/* 
-rule LightTChangeON
-when
-	Item Light_GF_ToiletS changed to ON
-then
-	executeCommandLine("curl -s www.dweet.io/dweet/for/6B5D6E27-E700-4394-AF60-06734E5A8982?lightt=ON")
-end
-
 
 
 rule LightTChangeOFF
@@ -236,7 +166,7 @@ when
 then
 	executeCommandLine("curl -s www.dweet.io/dweet/for/6B5D6E27-E700-4394-AF60-06734E5A8982?lightt=OFF")
 end
-*/
+
 rule SceneKomp
 when
 	Item Scene_General received command 1 //Komputer
@@ -312,9 +242,16 @@ then
 	var hour = now.getHourOfDay
 	var temperatura = Temperature_GF_Toilet.state as DecimalType
 	if ( temperatura < 21 ) {
-		sendCommand(Vol_GF_Toilet_Heating, ON)
+		if (Vol_GF_Toilet_Heating.state == OFF)
+		{
+			sendCommand(Vol_GF_Toilet_Heating, ON)
+		}
 	} else if (temperatura > 22 ) {
-		sendCommand(Vol_GF_Toilet_Heating, OFF)
+		if (Vol_GF_Toilet_Heating.state == ON)
+		{
+			sendCommand(Vol_GF_Toilet_Heating, OFF)
+		}
+		
 	}
 	
 end  
