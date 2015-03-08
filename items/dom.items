@@ -74,7 +74,8 @@ Group Temp_Chart	(Temperature)
 Number Temperature_GF_Corridor 	"Temperatura [%.1f °C]"	<temperature>	(Temperature, GF_Corridor)
 Number Temperature_GF_Toilet 	"Toaleta [%.1f °C]"	<temperature>	(Temperature, GF_Toilet,Temp_Chart){mqtt="<[mqttpi:MyMQTT/26/11/V_TEMP:state:default]"}
 Number Temperature_GF_Living 	"Temperatura [%.1f °C]"	<temperature>	(Temperature, GF_Living)
-Number Temperature_GF_Kitchen 	"Kuchnia [%.1f °C]"	<temperature>	(Temperature, GF_Kitchen, Temp_Chart) {mqtt="<[mqttpi:MyMQTT/20/0/V_TEMP:state:default]"}
+Number Temperature_GF_Kitchen 	"Kuchnia [%.1f °C]"	<temperature>	(Temperature, GF_Kitchen, Temp_Chart) {mqtt="<[mqttpi:MyMQTT/20/1/V_TEMP:state:default]"}
+Number Temperature_GF_Fridge 	"Lodówka [%.1f °C]"	<temperature>	(Temperature, GF_Kitchen, Temp_Chart) {mqtt="<[mqttpi:MyMQTT/20/0/V_TEMP:state:default]"}
 Number Temperature_GF_Bath 		"Temperatura w łazience [%.1f °C]"	<temperature>	(Temperature, GF_Bath)
 Number Temperature_GF_Child 	"Temperatura [%.1f °C]"	<temperature>	(Temperature, GF_Child)
 Number Temperature_GF_Bed 		"Temperatura [%.1f °C]"	<temperature>	(Temperature, GF_Bed)

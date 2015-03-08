@@ -329,8 +329,8 @@ rule PralkaOn
 when
 	Item Noise_GF_Bath changed
 then
-	println("Noise was: "+ Pranie.historicState(now.minusMinutes(2))+", Pranie: "+Pranie+"<<<")
-	if (Noise_GF_Bath.changedSince(now.minusMinutes(1)) && Noise_GF_Bath.state == 1 && (Pranie.state == OFF || Pranie.state == Undefined || Pranie.state == Uninitialized))
+	//println("Noise was: "+ Pranie.historicState(now.minusMinutes(2))+", Pranie: "+Pranie+"<<<")
+	if (Light_GF_Bath.state > 20 && Noise_GF_Bath.changedSince(now.minusMinutes(1)) && Noise_GF_Bath.state == 1 && (Pranie.state == OFF || Pranie.state == Undefined || Pranie.state == Uninitialized))
 	{
 		sendCommand(Pranie,ON)
 	}
@@ -348,7 +348,7 @@ rule PralkaOnOff
 when
 	Time cron "0 * * * * ?" 
 then
-	if (!Noise_GF_Bath.changedSince(now.minusMinutes(3)) && Noise_GF_Bath.state == 0 && Pranie.state == ON && newPranie == 1)
+	if (!Noise_GF_Bath.changedSince(now.minusMinutes(5)) && Noise_GF_Bath.state == 0 && Pranie.state == ON && newPranie == 1)
 			{
 				sendCommand(Pranie,OFF)
 				Pranie.persist

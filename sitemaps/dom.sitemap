@@ -28,7 +28,7 @@ sitemap dom label="Menu główne"
     Frame  label="Wykresy" {
    	Text label="Temperatura" icon="garden" {
         Switch item=Temp_Chart_Period label="Zakres czasu" mappings=[0="Godzina", 1="Dzień", 2="Tydzień"]
-                                Chart item=Temp_Chart period=h refresh=300 visibility=[Temp_Chart_Period==0, Hum_Chart_Period=="Uninitialized"]
+                                Chart item=Temp_Chart period=h refresh=300 visibility=[Temp_Chart_Period==0, Temp_Chart_Period=="Uninitialized"]
                                 Chart item=Temp_Chart period=D refresh=1800 visibility=[Temp_Chart_Period==1]
                                Chart item=Temp_Chart period=W refresh=3600 visibility=[Temp_Chart_Period==2]
        }
