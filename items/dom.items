@@ -60,6 +60,9 @@ Contact Window_GF_Kitchen               "Kuchnia [MAP(en.map):%s]"              
 Contact Window_GF_Living                "Balkon[MAP(en.map):%s]"         (GF_Living, Windows)
 Contact Window_GF_Bed                   "Sypialnia [MAP(en.map):%s]"                      (GF_Bed, Windows)
 Contact Window_GF_Children "U dzieci [MAP(en.map):%s]"        (GF_Child, Windows)
+Number Window_GF_Fridge                {mqtt="<[mqttpi:MyMQTT/20/3/V_TRIPPED:state:default]"}
+Contact Lodowka	"Lodówka [MAP(de.map):%s]"  (GF_Kitchen, Windows)
+
 
 //inne czujniki
 //Contact Water_GF_Toilet     "Wyciek wody [MAP(en.map):%s]"            (GF_Toilet, Windows)
@@ -96,6 +99,8 @@ Number Light_GF_Balcony		"Światło na balkonie [%d lx ]"	<temperature>	(Light, 
 Number Rain		"Deszcz [%d ]"	<temperature>	(GF_Balcony) {mqtt="<[mqttpi:MyMQTT/27/5/V_RAIN:state:default]"}
 
 Number Pressure		"Ciśnienie [%.1f Pa ]"	<temperature>	(GF_Balcony) {mqtt="<[mqttpi:MyMQTT/27/0/V_PRESSURE:state:default]"}
+Number Gas_GF_Kitchen 	"Dym [%.1f ppm]"	<temperature>	(GF_Kitchen) {mqtt="<[mqttpi:MyMQTT/20/2/V_VAR1:state:default]"}
+
 
 Number Temp_Chart_Period		"Temperatura"
 Number Hum_Chart_Period		"Wilgotność"

@@ -13,7 +13,8 @@ var double humb=0
 var Integer newRain = 0
 var double lightons
 var Integer newPranie = 0
-
+var Integer dym = 0
+var Integer newLodowka = 0
 
 /* 
 rule CaycoPresenceOn
@@ -358,8 +359,55 @@ then
 				}
 				newPranie=0
 			}
-end	
+end
 
+rule LodowkaOn
+when
+	Item Window_GF_Fridge changed
+then
+	//println("Noise was: "+ Pranie.historicState(now.minusMinutes(2))+", Pranie: "+Pranie+"<<<")
+	if (Window_GF_Fridge.state == 1 && (Lodowka.state == CLOSED || Lodowka.state == Undefined || Lodowka.state == Uninitialized))
+	{
+		sendCommand(Lodowka,OPEN)
+	} else
+	{
+		sendCommand(Lodowka,CLOSED)
+	}
+
+	Window_GF_Fridge.persist
+	Lodowka.persist
+end
+
+ 
+rule LodowkaOnOff
+when
+	Time cron "0 * * * * ?" 
+then
+	if (!Window_GF_Fridge.changedSince(now.minusMinutes(1)) && Window_GF_Fridge.state == 0 && Lodowka.state == OPEN)
+	{
+		sendCommand(Lodowka,CLOSED)
+		pushover("Drzwi lodówki zamknięte.")
+	} else if (!Window_GF_Fridge.changedSince(now.minusMinutes(1)) && Window_GF_Fridge.state == 1 && Lodowka.state == OPEN)
+	{
+		pushover("Drzwi lodówki otwarte powyżej 2 min!")
+	}
+	Lodowka.persist	
+end
+
+rule GasOn
+when 
+	Item Gas_GF_Kitchen changed
+then
+	if (Gas_GF_Kitchen.state > 0 && dym == 0)
+	{
+		pushover("Dym w kuchni!!!")
+		dym = 1
+	} else
+	{
+		pushover("Już nie ma dymu w kuchni")
+		dym = 0
+	}
+end
 /*rule CaycoPozaDomem
 when
 	Item Miejsce_cayco changed from Dom
