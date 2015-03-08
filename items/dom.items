@@ -37,7 +37,7 @@ Color  RGBLight4							{milight="salon;10;rgb"}
 
 Switch	WakeUp 							"Budzik"					(GF_Living)
 Switch	TestSwitch 							"Test Switch"					
-
+Switch Pranie							"Trwa pranie"			(GF_Bath)
 Number Scene_General			"Ustawienie"			<sofa>
 
 //Wyłączniki prądu
@@ -67,7 +67,7 @@ Contact Window_GF_Children "U dzieci [MAP(en.map):%s]"        (GF_Child, Windows
 //Contact Air_GF_Living                "Jakość powietrza [MAP(en.map):%s]"         (GF_Living, Windows)
 Contact Smoke_GF_Living                "Dym [MAP(en.map):%s]"         (GF_Living, Windows)
 Contact Noise_GF_Living                "Hałas [MAP(en.map):%s]"         (GF_Living, Windows)
-Contact Noise_GF_Bath				   "Hałas w lazience"         (GF_Bath, Windows) {mqtt="<[mqttpi:MyMQTT/23/2/V_LIGHT_LEVEL:state:default]"}
+Dimmer Noise_GF_Bath				   "Hałas w lazience"         {mqtt="<[mqttpi:MyMQTT/23/2/V_LIGHT_LEVEL:state:default]"}
 
 /* Indoor Temperatures */
 Group Temp_Chart	(Temperature)
@@ -100,3 +100,4 @@ Number Temp_Chart_Period		"Temperatura"
 Number Hum_Chart_Period		"Wilgotność"
 Number Rain_Chart_Period		"Deszcz"
 Number Pressure_Period		"Ciśnienie"
+

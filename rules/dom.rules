@@ -12,6 +12,8 @@ var Double tmpf
 var double humb=0
 var Integer newRain = 0
 var double lightons
+var Integer newPranie = 0
+
 
 /* 
 rule CaycoPresenceOn
@@ -311,15 +313,51 @@ rule DeszczPada
 when 
 	Item Rain changed
 then
-	if ( Rain.state > 10 && newRain == 0)
+	if ( Rain.state > 35 && newRain == 0)
 	{
-		pushover("Cayco wyszedł z domu")	
+		pushover("Pada deszcz!")	
 		newRain = 1 //rain's started
 	}
-	if (Rain.state < 10 && newRain == 1)
+	if (Rain.state < 35 && newRain == 1)
 	{
 		newRain = 0 //rain has finished
+		pushover("Juz nie pada deszcz!")
 	}
+end	
+
+rule PralkaOn
+when
+	Item Noise_GF_Bath changed
+then
+	println("Noise was: "+ Pranie.historicState(now.minusMinutes(2))+", Pranie: "+Pranie+"<<<")
+	if (Noise_GF_Bath.changedSince(now.minusMinutes(1)) && Noise_GF_Bath.state == 1 && (Pranie.state == OFF || Pranie.state == Undefined || Pranie.state == Uninitialized))
+	{
+		sendCommand(Pranie,ON)
+	}
+	if (Noise_GF_Bath.state == 1 && Pranie.historicState(now.minusMinutes(2)).state == ON && Pranie.state == ON && newPranie == 0) //X czasu temu byl juz halas
+	{
+			pushover("Wykryto poczatek prania.")
+			newPranie = 1
+	}
+	Noise_GF_Bath.persist
+	Pranie.persist
+end
+
+ 
+rule PralkaOnOff
+when
+	Time cron "0 * * * * ?" 
+then
+	if (!Noise_GF_Bath.changedSince(now.minusMinutes(3)) && Noise_GF_Bath.state == 0 && Pranie.state == ON && newPranie == 1)
+			{
+				sendCommand(Pranie,OFF)
+				Pranie.persist
+				if (newPranie == 1)
+				{
+					pushover("Pranie zakończone!")
+				}
+				newPranie=0
+			}
 end	
 
 /*rule CaycoPozaDomem
@@ -336,8 +374,7 @@ when
 then
 	pushover("Magda wyszła z domu")
 end
-*/
-/*
+
 when
 	Item Dom_cayco_phone received update or
 	Item Dom_magda_phone received update

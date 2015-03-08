@@ -6,6 +6,6 @@ Strategies {
 
 Items {
 	// let's only store temperature values in rrd
-	Temperature_GF_Kitchen, Temperature_GF_Toilet, Temperature_GF_Balcony, Rain, Pressure, Humidity_GF_Toilet, Humidity_GF_Balcony, Light_GF_Balcony  : strategy = everyMinute
-	
+	Temperature_GF_Kitchen, Temperature_GF_Toilet, Temperature_GF_Balcony, Rain, Pressure, Humidity_GF_Toilet, Humidity_GF_Balcony, Light_GF_Balcony  : strategy = everyMinute, restoreOnStartup
+
 }
