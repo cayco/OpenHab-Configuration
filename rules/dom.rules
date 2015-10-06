@@ -16,21 +16,18 @@ var Integer newPranie = 0
 var Integer dym = 0
 var Integer newLodowka = 0
 
-/* 
-rule CaycoPresenceOn
+
+rule Lightning
 when 
-	Item PresenceCayco_PhoneMqttHome changed from OFF to ON
+	Item Lightning changed
 then
-	pushover("Cayco jest w domu","iPhone4S")
+	
+	if (Lightning.state == 1)
+	{
+		pushover("Uderzył piorun! Odległość: " + LightningDistance.state+"km")
+	}
 end
 
-rule CaycoPresenceOff
-when 
-	Item PresenceCayco_PhoneMqttHome changed from ON to OFF
-then
-	pushover("Cayco wyszedł z domu","iPhone4S")
-end
-*/
 
 rule FanControlH //wlacz lub wylacz wentylator gdy wilgotnosc jest wieksza niz 45%
 when
@@ -184,8 +181,11 @@ rule SceneLozko
 when
 	Item Scene_General received command 2 //Łóżko
 then
-	sendCommand(RGBLight, "30,92,100")
 	executeCommandLine("tdtool -f salon")
+	executeCommandLine("tdtool -f HiFi")
+	executeCommandLine("tdtool -f Komputer")
+	sendCommand(Light_GF_Living_TableSL,"O")
+	sendCommand(Light_GF_Bedroom_CeilingSL, "ON")
 end	
 
 
@@ -222,6 +222,22 @@ end
  		callScript("sunrise")
  	}
  end
+/* 
+rule LEDy
+when
+	Item LEDSwitch1 changed to ON or
+	Item LEDSwitch2 changed to ON or
+	Item LEDSwitch3 changed to ON or
+	Item LEDSwitch4 changed to ON or
+	Item LEDSwitch5 changed to ON
+then
+	sendCommand(LEDSwitch1, "OFF")
+	sendCommand(LEDSwitch2, "OFF")
+	sendCommand(LEDSwitch3, "OFF")
+	sendCommand(LEDSwitch4, "OFF")
+	sendCommand(LEDSwitch5, "OFF")
+end
+*/
  	
 rule RGBWakeUp
 when
@@ -325,6 +341,12 @@ then
 		pushover("Juz nie pada deszcz!")
 	}
 end	
+rule PralkaDebug
+when
+	Item Noise_GF_Bath changed
+then
+	println("Zmiana hałasu: "+Noise_GF_Bath.state)
+end
 
 rule PralkaOn
 when
@@ -337,6 +359,7 @@ then
 	}
 	if (Noise_GF_Bath.state == 1 && Pranie.historicState(now.minusMinutes(2)).state == ON && Pranie.state == ON && newPranie == 0) //X czasu temu byl juz halas
 	{
+			println("Wykryto poczatek prania."+Noise_GF_Bath.state)
 			pushover("Wykryto poczatek prania.")
 			newPranie = 1
 	}
@@ -355,6 +378,7 @@ then
 				Pranie.persist
 				if (newPranie == 1)
 				{
+					println("Pranie zakończone")
 					pushover("Pranie zakończone!")
 				}
 				newPranie=0
@@ -378,7 +402,7 @@ then
 	Lodowka.persist
 end
 
- 
+/* 
 rule LodowkaOnOff
 when
 	Time cron "0 * * * * ?" 
@@ -387,13 +411,16 @@ then
 	{
 		sendCommand(Lodowka,CLOSED)
 		pushover("Drzwi lodówki zamknięte.")
-	} else if (!Window_GF_Fridge.changedSince(now.minusMinutes(1)) && Window_GF_Fridge.state == 1 && Lodowka.state == OPEN)
+	} else if (Window_GF_Fridge.state == 1 && Lodowka.state == OPEN)
 	{
-		pushover("Drzwi lodówki otwarte powyżej 2 min!")
+		if (!Window_GF_Fridge.changedSince(now.minusMinutes(5)))
+		{
+			pushover("Drzwi lodówki otwarte powyżej 2 min!")
+		}	
 	}
 	Lodowka.persist	
 end
-
+*/
 rule GasOn
 when 
 	Item Gas_GF_Kitchen changed

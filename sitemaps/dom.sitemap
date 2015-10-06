@@ -2,12 +2,11 @@ sitemap dom label="Menu główne"
 {
 	Frame label="Przełączniki" {
 		Switch item=Light_GF_Living_TableSL icon="slider"
-		Switch item=Lights icon="slider"
-		Switch item=GF_Living icon="slider"
+		Switch item=Light_GF_Bedroom_CeilingSL icon="slider"
 		Switch item=Vol_GF_Living_Sound	 icon="slider"
-		Switch item=Vol_GF_Living_Other	 icon="slider"
-		Switch item=Outlets	 icon="slider"
-		Switch item=WakeUp icon="slider"
+		Switch item=Vol_GF_Bedroom_TV 	 icon="slider"
+        Switch item=FanSwitch icon="slider"
+
 		Text item=Temperature_GF_Balcony
 		}
 		
@@ -17,11 +16,11 @@ sitemap dom label="Menu główne"
 	Frame label=Pomieszczenia {
 		Group item=GF_Balcony		label="Balkon" icon="firstfloor"
 		Group item=GF_Living	label="Salon" icon="firstfloor"
-		Group item=GF_Kitchen	label="Kuchnia" icon="groundfloor"
-		Group item=GF_Bath		label="Łazienka" icon="bath"
-		Group item=GF_Child 	label="Pokój dzieci" icon="boy0"
 		Group item=GF_Bed		label="Sypialnia" icon="bedroom"
 		Group item=GF_Toilet 	label="Toaleta" icon="bath"
+		Group item=GF_Child 	label="Pokój dzieci" icon="boy0"
+		Group item=GF_Kitchen	label="Kuchnia" icon="groundfloor"
+		Group item=GF_Bath		label="Łazienka" icon="bath"
 		Group item=GF_Corridor	label="Korytarz" icon="corridor"
 		Group item=Loc			label="Lokalizacja" icon="garden"
 	}

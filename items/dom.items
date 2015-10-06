@@ -20,9 +20,9 @@ Switch Light_GF_Bedroom_CeilingSL 		"Sypialnia żyrandol" 	<slider> (GF_Bed, Lig
 Switch Light_GF_Children_CeilingSL		"Dzieci żyrandol" 		<slider> (GF_Child, Lights) {tellstick="dzieci:Command:Dimmable:1" }
 //Switch Light_GF_Corridor_Ceiling		"Korytarz" 				<slider> (GF_Corridor, Lights)
 //Switch Light_GF_Kitchen_Ceiling 		"Kuchnia żyrandol" 		<slider> (GF_Kitchen, GF_Living, Lights)
-Switch Light_GF_Living_Table 			"Żyrandol - ściemmniacz" 		<slider> (GF_Living, GF_Kitchen) {exec=">[ON:tdtool -n salon]", autoupdate="false"}
-Switch Light_GF_Bedroom_Ceiling 		"Żyrandol - ściemmniacz" 	<slider> (GF_Bed) {exec=">[ON:tdtool -n sypialnia]", autoupdate="false"}
-Switch Light_GF_Children_Ceiling		"Żyrandol - ściemmniacz" 		<slider>  (GF_Child) {exec=">[ON:tdtool -n dzieci]", autoupdate="false"}
+//Switch Light_GF_Living_Table 			"Żyrandol - ściemmniacz" 		<slider> (GF_Living, GF_Kitchen) {exec=">[ON:tdtool -n salon]", autoupdate="false"}
+//Switch Light_GF_Bedroom_Ceiling 		"Żyrandol - ściemmniacz" 	<slider> (GF_Bed) {exec=">[ON:tdtool -n sypialnia]", autoupdate="false"}
+//Switch Light_GF_Children_Ceiling		"Żyrandol - ściemmniacz" 		<slider>  (GF_Child) {exec=">[ON:tdtool -n dzieci]", autoupdate="false"}
 Switch Light_GF_ToiletS					"Światło w toalecie"	<slider>	(GF_Toilet)
 
 Switch Light_Groundfloor                "Milight - wszystkie"    (GF_Living, Lights) {milight="salon;6"}    
@@ -42,8 +42,9 @@ Number Scene_General			"Ustawienie"			<sofa>
 
 //Wyłączniki prądu
 Switch Vol_GF_Living_Sound			"HiFi" 						<light> (GF_Living, Outlets) {tellstick="HiFi:Command"}	
-Switch Vol_GF_Toilet_Heating 		"Kaloryfer w łazience" 		<heating> (GF_Toilet, Outlets) {tellstick="Kaloryfer:Command"}
 Switch Vol_GF_Living_Other 			"Elektronika w salonie" 	<light> (Outlets) {tellstick="Komputer:Command"}
+//Switch Vol_GF_Toilet_Heating 		"Kaloryfer w łazience" 		<heating> (GF_Toilet, Outlets) /*{tellstick="Kaloryfer:Command"}*/
+Switch Vol_GF_Bedroom_TV 		"TV" 		<light> (GF_Bed, Outlets) {tellstick="Kaloryfer:Command"}
 
 // Location and movement
 Switch  PresenceMagda_PhoneMqttHome   	"Magda @ Home"    				<present> (Loc,GF_Corridor)	{mqttitude="mqttpi:owntracks/magda/#" }  								
@@ -51,6 +52,12 @@ Switch  PresenceCayco_PhoneMqttHome   	"Cayco @ Home"					<present> (Loc, GF_Cor
 Switch	MoveDetect						"Wykrywanie ruchu w korytarzu" 	<siren> (Loc, GF_Corridor) 	{exec="OFF:/usr/bin/curl -s http://127.0.0.1:8082/0/detection/stop"} 	
 Switch RuchKorytarz
 //Switch	MoveDetectDoor						"Wykrywanie ruchu w korytarzu przy drzwiach" 	<siren> (Loc, GF_Corridor) 	{mqtt="<[mqttpi:MyMQTT/23/1/V_TRIPPED:state:default]"} 	
+
+Switch LEDSwitch1   "LED Białe"    				<present> (GF_Bed) {mqtt=">[mqttpi:MyMQTT/31/1/V_LIGHT:command:ON:1],>[mqttpi:MyMQTT/31/1/V_LIGHT:command:OFF:0]"}
+Switch LEDSwitch2   "LED Żółte"    				<present> (GF_Bed) {mqtt=">[mqttpi:MyMQTT/31/2/V_LIGHT:command:ON:1],>[mqttpi:MyMQTT/31/2/V_LIGHT:command:OFF:0]"}
+Switch LEDSwitch3   "LED Niebieski"    			<present> (GF_Bed) {mqtt=">[mqttpi:MyMQTT/31/3/V_LIGHT:command:ON:1],>[mqttpi:MyMQTT/31/3/V_LIGHT:command:OFF:0]"}
+Switch LEDSwitch4   "LED Noc"    				<present> (GF_Bed) {mqtt=">[mqttpi:MyMQTT/31/4/V_LIGHT:command:ON:1],>[mqttpi:MyMQTT/31/4/V_LIGHT:command:OFF:0]"}
+Switch LEDSwitch5   "LED blink"    				<present> (GF_Bed) {mqtt=">[mqttpi:MyMQTT/31/5/V_LIGHT:command:ON:1],>[mqttpi:MyMQTT/31/5/V_LIGHT:command:OFF:0]"}
 
 Switch FanSwitch   	"Wentylator"    				<present> (Loc,GF_Toilet) {mqtt=">[mqttpi:MyMQTT/26/1/V_LIGHT:command:ON:1],>[mqttpi:MyMQTT/26/1/V_LIGHT:command:OFF:0]"}
 
@@ -70,7 +77,10 @@ Contact Lodowka	"Lodówka [MAP(de.map):%s]"  (GF_Kitchen, Windows)
 //Contact Air_GF_Living                "Jakość powietrza [MAP(en.map):%s]"         (GF_Living, Windows)
 Contact Smoke_GF_Living                "Dym [MAP(en.map):%s]"         (GF_Living, Windows)
 Contact Noise_GF_Living                "Hałas [MAP(en.map):%s]"         (GF_Living, Windows)
-Dimmer Noise_GF_Bath				   "Hałas w lazience"         {mqtt="<[mqttpi:MyMQTT/23/2/V_LIGHT_LEVEL:state:default]"}
+Dimmer Noise_GF_Bath				   "Hałas w lazience [%.1f]"        (GF_Bath) {mqtt="<[mqttpi:MyMQTT/23/2/V_LIGHT_LEVEL:state:default]"}
+Number LightningDistance				"Odleglość ostatniego pioruna [%d km]"	(GF_Balcony) {mqtt="<[mqttpi:MyMQTT/29/1/V_DISTANCE:state:default]"}
+Number Lightning						"Uderzył piorun: [%d ]"				(GF_Balcony) {mqtt="<[mqttpi:MyMQTT/29/0/V_TRIPPED:state:default]"}
+
 
 /* Indoor Temperatures */
 Group Temp_Chart	(Temperature)
@@ -94,7 +104,7 @@ Number Voltage_GF_Kitchen 		"Stan baterii [%d mV]	"	<temperature>	(Voltage, GF_K
 
 //Voltages
 Number Light_GF_Toilet 		"Światło [%d lx ]"	<temperature>	(Light, GF_Toilet){mqtt="<[mqttpi:MyMQTT/26/13/V_LIGHT_LEVEL:state:default]"}
-Number Light_GF_Bath		"Światło w korytarzu [%d lx ]"	<temperature>	(Light, GF_Bath) {mqtt="<[mqttpi:MyMQTT/23/0/V_LIGHT_LEVEL:state:default]"}
+Number Light_GF_Bath		"Światło w łazience [%d lx ]"	<temperature>	(Light, GF_Bath) {mqtt="<[mqttpi:MyMQTT/23/0/V_LIGHT_LEVEL:state:default]"}
 Number Light_GF_Balcony		"Światło na balkonie [%d lx ]"	<temperature>	(Light, GF_Balcony) {mqtt="<[mqttpi:MyMQTT/27/2/V_LIGHT_LEVEL:state:default]"}
 Number Rain		"Deszcz [%d ]"	<temperature>	(GF_Balcony) {mqtt="<[mqttpi:MyMQTT/27/5/V_RAIN:state:default]"}
 
