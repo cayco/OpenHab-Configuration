@@ -184,8 +184,9 @@ then
 	executeCommandLine("tdtool -f salon")
 	executeCommandLine("tdtool -f HiFi")
 	executeCommandLine("tdtool -f Komputer")
-	sendCommand(Light_GF_Living_TableSL,"O")
-	sendCommand(Light_GF_Bedroom_CeilingSL, "ON")
+	sendCommand(RGBLight, "32,67,100")
+//	sendCommand(Light_GF_Living_TableSL,"O")
+//	sendCommand(Light_GF_Bedroom_CeilingSL, "ON")
 end	
 
 
@@ -200,11 +201,23 @@ end
 
 rule SceneOff
 when
-	Item Scene_General received command 5 //Off
+	Item Scene_General received command 6 //Off
 then
 	sendCommand(Lights, "OFF")
+    executeCommandLine("tdtool -f Kaloryfer")
+
 end	
 
+
+rule ScenePrasowanie
+when
+	Item Scene_General received command 5 //Prasowanie
+then
+	sendCommand(Light_GF_Living_TableSL,"ON")
+	sendCommand(Light_LivingroomC, "ON")
+    executeCommandLine("tdtool -n Kaloryfer")
+    
+end	
 
 rule SceneFull
 when
@@ -245,17 +258,16 @@ when
 then
 	callScript("sunrise")
 end	
-
+/*
 rule AutomatykaGrzejnikaOn
 when
-/* 
+ 
 	Time cron "0 0 6 * * ?" or
 	Time cron "0 0 9 * * ?" or
 	Time cron "0 0 12 * * ?" or
 	Time cron "0 0 15 * * ?" or
 	Time cron "0 0 18 * * ?" or
 	Time cron "0 0 21 * * ?"
-	*/
 	Item Temperature_GF_Toilet changed
 then
 	var hour = now.getHourOfDay
@@ -274,6 +286,7 @@ then
 	}
 	
 end  
+*/
 /* 
 rule AutomatykaGrzejnikaOff
 when
@@ -330,15 +343,15 @@ rule DeszczPada
 when 
 	Item Rain changed
 then
-	if ( Rain.state > 35 && newRain == 0)
+	if ( (!Rain.state.changedSince(now.minusMinutes(20)) && Rain.state > 35 && newRain == 0)
 	{
-		pushover("Pada deszcz!")	
+		// pushover("Pada deszcz!")	
 		newRain = 1 //rain's started
 	}
-	if (Rain.state < 35 && newRain == 1)
+	if ((!Rain.state.changedSince(now.minusMinutes(20)) && Rain.state < 35 && newRain == 1)
 	{
 		newRain = 0 //rain has finished
-		pushover("Juz nie pada deszcz!")
+		// pushover("Juz nie pada deszcz!")
 	}
 end	
 rule PralkaDebug
@@ -425,13 +438,13 @@ rule GasOn
 when 
 	Item Gas_GF_Kitchen changed
 then
-	if (Gas_GF_Kitchen.state > 0 && dym == 0)
+	if ((!Gas_GF_Kitchen.state.changedSince(now.minusMinutes(20)) && Gas_GF_Kitchen.state > 0 && dym == 0)
 	{
-		pushover("Dym w kuchni!!!")
+		// pushover("Dym w kuchni!!!")
 		dym = 1
 	} else
 	{
-		pushover("Już nie ma dymu w kuchni")
+		// pushover("Już nie ma dymu w kuchni")
 		dym = 0
 	}
 end

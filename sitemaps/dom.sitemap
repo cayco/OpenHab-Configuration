@@ -11,7 +11,7 @@ sitemap dom label="Menu główne"
 		}
 		
 	Frame label="Ustawienia grupowe" {
-		Switch item=Scene_General label="Ustawienie" mappings=[1=Komputer, 2=Lozko, 3=Noc, 4=Full, 5=Off]
+		Switch item=Scene_General label="Ustawienie" mappings=[1=Komputer, 2=Lozko, 3=Noc, 4=Full, 5=Prasowanie, 6=Off]
 	}	
 	Frame label=Pomieszczenia {
 		Group item=GF_Balcony		label="Balkon" icon="firstfloor"
