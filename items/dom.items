@@ -41,10 +41,13 @@ Switch Pranie							"Trwa pranie"			(GF_Bath)
 Number Scene_General			"Ustawienie"			<sofa>
 
 //Wyłączniki prądu
-Switch Vol_GF_Living_Sound			"HiFi" 						<light> (GF_Living, Outlets) {tellstick="HiFi:Command"}	
+Switch Vol_GF_Living_Sound			"HiFi w salonie" 						<light> (GF_Living, Outlets) {tellstick="HiFi:Command"}	
 Switch Vol_GF_Living_Other 			"Elektronika w salonie" 	<light> (Outlets) {tellstick="Komputer:Command"}
-//Switch Vol_GF_Toilet_Heating 		"Kaloryfer w łazience" 		<heating> (GF_Toilet, Outlets) /*{tellstick="Kaloryfer:Command"}*/
-Switch Vol_GF_Bedroom_TV 		"TV" 		<light> (GF_Bed, Outlets) {tellstick="Kaloryfer:Command"}
+//Switch Vol_GF_Toilet_Heating 		"Kaloryfer w łazience" 		<heating> (GF_Toilet, Outlets) {tellstick="Lazienka:Command"}
+//Switch Vol_GF_Bedroom_TV 		"TV" 		<light> (GF_Bed, Outlets) {tellstick="Kaloryfer:Command"}
+Switch Vol_GF_Living_Zelazko 		"Żelazko" 		<light> (GF_Living, Lights) {tellstick="Kaloryfer:Command"}
+Switch Vol_GF_Bedroom_Sound 		"HiFi w sypialni" 		<light> (GF_Bed, Outlets) {tellstick="Lazienka:Command"}
+
 
 // Location and movement
 Switch  PresenceMagda_PhoneMqttHome   	"Magda @ Home"    				<present> (Loc,GF_Corridor)	{mqttitude="mqttpi:owntracks/magda/#" }  								

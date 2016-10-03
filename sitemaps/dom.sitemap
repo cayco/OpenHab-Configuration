@@ -4,6 +4,7 @@ sitemap dom label="Menu główne"
 		Switch item=Light_GF_Living_TableSL icon="slider"
 		Switch item=Light_GF_Bedroom_CeilingSL icon="slider"
 		Switch item=Vol_GF_Living_Sound	 icon="slider"
+        Switch item=Vol_GF_Living_Choinka	 icon="slider"
 		Switch item=Vol_GF_Bedroom_TV 	 icon="slider"
         Switch item=FanSwitch icon="slider"
 
