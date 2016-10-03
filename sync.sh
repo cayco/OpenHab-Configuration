@@ -1,3 +1,3 @@
 #!/bin/bash
 
-rsync -vua * pi:configurations
+rsync -vua * /Volumes/openHAB-conf/configurations
