@@ -7,4 +7,6 @@ Strategies {
 Items {
 	Temperature_GF_Kitchen, Temperature_GF_Toilet, Temperature_GF_Balcony, Rain, Pressure, Humidity_GF_Toilet, Humidity_GF_Balcony, Light_GF_Balcony, Temperature_GF_Fridge  : strategy = everyMinute, restoreOnStartup
 	Window_GF_Fridge, Lodowka  : strategy = everyChange, restoreOnStartup
+        Light_GF_ToiletS, FanSwitch : strategy = everyChange, restoreOnStartup
+        Voltage_GF_Kitchen : strategy = every10Minute
 }

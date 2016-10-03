@@ -33,9 +33,9 @@ rule FanControlH //wlacz lub wylacz wentylator gdy wilgotnosc jest wieksza niz 4
 when
 	Item Humidity_GF_Toilet changed
 then
-	if ((FanSwitch.state == OFF || FanSwitch.state == Uninitialized || FanSwitch.state == Undefined) && Humidity_GF_Toilet.state > 60) {
+	if ((FanSwitch.state == OFF || FanSwitch.state == Uninitialized || FanSwitch.state == Undefined) && Humidity_GF_Toilet.state > 70) {
 		sendCommand(FanSwitch, ON)
-	} else if (FanSwitch.state == ON && Humidity_GF_Toilet.state < 60 && Light_GF_Toilet.state < 20 && inTimer == 0) {
+	} else if (FanSwitch.state == ON && Humidity_GF_Toilet.state < 65 && Light_GF_Toilet.state < 20 && inTimer == 0) {
 		sendCommand(FanSwitch, OFF)
 	}	
 end
@@ -136,14 +136,10 @@ then
 		]
 	} else if (Light_GF_Toilet.state < 20 && Light_GF_ToiletS.state == ON)
 	{
-/*		if (now().getMillis() / 1000 - lightons > 10)
-		{
-			logInfo("millis",(now().getMillis() / 1000) as String	)
-			logInfo("lightns",lightons as String)
-	 */		
+                       sendCommand(Light_GF_ToiletS, OFF)
 			inTimer = 1
 			timer = createTimer(now.plusSeconds(60)) [|
-			if (Light_GF_Toilet.state < 20 && Humidity_GF_Toilet.state < 60) {
+			if (Light_GF_Toilet.state < 20 /*&& Humidity_GF_Toilet.state < 60*/) {
 				sendCommand(Light_GF_ToiletS, OFF)
 				sendCommand(FanSwitch,OFF)
 			} 
