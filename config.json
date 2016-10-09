@@ -1,0 +1,66 @@
+{
+    "bridge": {
+            "name": "Homebridge",
+            "username": "CC:22:3D:E3:CE:30",
+            "port": 51826,
+            "pin": "031-45-154"
+        },
+    
+    "description": "This is an example configuration file with one fake accessory and one fake platform. You can use this as a template for creating your own configuration file containing devices you actually own.",
+
+"platforms": [
+    {
+            "platform": "openHAB",
+            "name": "openHAB",
+            "host": "10.0.0.11",
+            "port": "8080",
+            "sitemap": "siri",
+            "useLabelForName": true,
+            "customAttrs": [
+                        {
+                                "itemName":"Light_GF_Living_TableSL",
+                                "itemLabel":"Living light",
+                                "itemManufacturer": "Cayc0",
+                                "itemModel": "Cayc0 Switch",
+                                "itemSerialNumber":"12345678"
+                                },
+                        {
+                                "itemName":"Light_GF_Bedroom_CeilingSL",
+                                "itemLabel":"Bedroom light",
+                                "itemManufacturer": "Cayc0",
+                                "itemModel": "Cayc0 Switch",
+                                "itemSerialNumber":"2345678"
+                        },
+                        {
+                                "itemName":"Vol_GF_Living_Sound",
+                                "itemLabel":"HiFi",
+                                "itemManufacturer": "Cayc0",
+                                "itemModel": "Cayc0 Switch",
+                                "itemSerialNumber":"345678"
+                        },
+                        {
+                                "itemName":"Vol_GF_Living_Other",
+                                "itemLabel":"Mac",
+                                "itemManufacturer": "Cayc0",
+                                "itemModel": "Cayc0 Switch",
+                                "itemSerialNumber":"345678"
+                        },
+                        {
+                                "itemName":"Light_LivingroomC ",
+                                "itemLabel":"Milight white",
+                                "itemManufacturer": "Cayc0",
+                                "itemModel": "Cayc0 Switch",
+                                "itemSerialNumber":"345678"
+                        },
+                        {
+                                "itemName":"Vol_GF_Living_Zelazko",
+                                "itemLabel":"Iron",
+                                "itemManufacturer": "Cayc0",
+                                "itemModel": "Cayc0 Switch",
+                                "itemSerialNumber":"345678"
+                        }
+
+            ]
+        }
+]
+}

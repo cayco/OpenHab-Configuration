@@ -1,0 +1,20 @@
+sitemap siri label="Siri" {
+    Frame label="Przełączniki" {
+        # Lightbulb (On/Off), SwitchItem is always a lightbulb. See Frames for outlets.
+
+        Switch item=Light_GF_Living_TableSL icon="slider" label="Living light"
+        Switch item=Vol_GF_Living_Other label="Mac"
+	Switch item=Vol_GF_Living_Sound	 icon="slider" label="HiFi"
+	Switch item=Light_GF_Bedroom_CeilingSL icon="slider" label="Bedroom light"
+	Switch item=Light_LivingroomC icon="slider" label="Milight white"
+	Switch item=Vol_GF_Living_Zelazko" icon="slider" label="Iron"
+        
+        
+        # Temperature sensor, value is taken from label
+        Text item=Temperature_GF_Balcony label="Balcony [%.1f °C]"
+
+        Frame label="outlet" icon="outlet" { # Outlets must be configured in a Frame.
+            Switch item=Outlet_GF_Living label="Radio"
+            }
+        }
+}
