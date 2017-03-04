@@ -4,6 +4,7 @@ import org.openhab.model.script.actions.*
 import org.openhab.action.pushover.*
 import org.openhab.core.library.types.DecimalType
 import java.lang.Math
+import org.joda.time.*
 
 var Timer timer
 var Integer inTimer = 0
@@ -33,9 +34,9 @@ rule FanControlH //wlacz lub wylacz wentylator gdy wilgotnosc jest wieksza niz 4
 when
 	Item Humidity_GF_Toilet changed
 then
-	if ((FanSwitch.state == OFF || FanSwitch.state == Uninitialized || FanSwitch.state == Undefined) && Humidity_GF_Toilet.state > 70) {
+	if ((FanSwitch.state == OFF || FanSwitch.state == Uninitialized || FanSwitch.state == Undefined) && Humidity_GF_Toilet.state > 70 && (now.getHourOfDay < 22  || now.getHourOfDay > 7) ) {
 		sendCommand(FanSwitch, ON)
-	} else if (FanSwitch.state == ON && Humidity_GF_Toilet.state < 65 && Light_GF_Toilet.state < 20 && inTimer == 0) {
+	} else if (FanSwitch.state == ON && Humidity_GF_Toilet.state < 75 && Light_GF_Toilet.state < 20 && inTimer == 0) {
 		sendCommand(FanSwitch, OFF)
 	}	
 end
@@ -201,7 +202,7 @@ when
 then
 	sendCommand(Lights, "OFF")
     executeCommandLine("tdtool -f Kaloryfer")
-    executeCommandLine("tdtool -f Choinka")
+    executeCommandLine("tdtool -f ")
 
 end	
 
@@ -212,7 +213,7 @@ when
 then
 	sendCommand(Light_GF_Living_TableSL,"ON")
 	sendCommand(Light_LivingroomC, "ON")
-    executeCommandLine("tdtool -n Kaloryfer")
+    executeCommandLine("tdtool -n Zelazko")
     
 end	
 
@@ -223,8 +224,8 @@ then
 	sendCommand(Light_GF_Living_TableSL,"ON")
 	sendCommand(Light_LivingroomC, "ON")
 end	
-
- rule WakeUp
+/*
+rule WakeUp
  when
     Time cron "0 00 6 ? * MON-FRI *"
  then
@@ -232,7 +233,21 @@ end
  		callScript("sunrise")
  	}
  end
-/* 
+*/
+rule ChoinkaOff
+ when
+    Time cron "0 0 23 1/1 * ? *"
+ then
+    executeCommandLine("tdtool -f Kaloryfer")
+ end
+
+rule ChoinkaOn
+ when
+    Time cron "0 0 7 1/1 * ? *"
+ then
+    executeCommandLine("tdtool -n Kaloryfer")
+ end
+ /*
 rule LEDy
 when
 	Item LEDSwitch1 changed to ON or
